@@ -25,10 +25,6 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -38,7 +34,7 @@ class AuthController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return $request->all();
     }
 
     /**
@@ -49,7 +45,10 @@ class AuthController extends Controller
      */
     public function show($id)
     {
-       
+       return response()->json([
+           'message' => 'Display the specified resource',
+           '$data' => User::find($id) 
+       ]);
     }
 
     /**
