@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;//llll
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Validator;
 class AuthController extends Controller
 {
     /**
@@ -34,7 +35,39 @@ class AuthController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->all();
+       $validator = Validator::make($request->all(),[
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6'
+        ]);
+        if($validator->fails()){
+         return response()->json([
+             'success' => false,
+             'errors' => $validator->errors()
+            ], 401);
+        }
+        try{
+            $users = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
+
+            return return response()->json([
+                    'success' => true,
+                    'message' => "User Save successfully",
+                    'data' => $users
+                   
+            ],200);
+        }
+        catch($e){
+            return return response()->json([
+                'success' => 'false',
+                'message' => 'Something wrong!'
+            ], 400);
+        }
+        
+        
     }
 
     /**
@@ -82,6 +115,9 @@ class AuthController extends Controller
      */
     public function destroy($id)
     {
-         return User::find($id)->delete();
+        return response()->json([
+            'message' => 'Remove the specified resource from storage',
+            '$data' => User::find($id)->delete() 
+        ]);
     }
 }
