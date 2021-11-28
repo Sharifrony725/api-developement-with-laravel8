@@ -5,6 +5,7 @@ use App\Models\User;//llll
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
+use Exception;
 class AuthController extends Controller
 {
     /**
@@ -53,15 +54,15 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password)
             ]);
 
-            return return response()->json([
+             return response()->json([
                     'success' => true,
                     'message' => "User Save successfully",
                     'data' => $users
                    
             ],200);
         }
-        catch($e){
-            return return response()->json([
+        catch(Exception $e){
+             return response()->json([
                 'success' => 'false',
                 'message' => 'Something wrong!'
             ], 400);
@@ -77,11 +78,21 @@ class AuthController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-       return response()->json([
-           'message' => 'Display the specified resource',
-           '$data' => User::find($id) 
-       ]);
+    { 
+        try{
+        User::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Remove the specified resource from storage',
+            'data' => User::find($id)
+        ]);
+    } catch(Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong!',
+        ]);
+     }
+
     }
 
     /**
@@ -104,7 +115,36 @@ class AuthController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6'
+        ]);
+        if($validator->fails()){
+         return response()->json([
+             'success' => false,
+             'errors' => $validator->errors()
+            ], 401);
+        }
+        try{
+            $users = User::findOrFail($id);
+
+            $users->name = $request->name;
+            $users->emai = $request->email;
+            $users->password = $request->password;
+            $users->save();
+             return response()->json([
+                    'success' => true,
+                    'message' => "User Data Update successfully",
+                    'data' => $users
+            ],200);
+        }
+        catch(Exception $e){
+             return response()->json([
+                'success' => 'false',
+                'message' => 'Something wrong!'
+            ], 400);
+        }
     }
 
     /**
@@ -115,9 +155,18 @@ class AuthController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json([
-            'message' => 'Remove the specified resource from storage',
-            '$data' => User::find($id)->delete() 
-        ]);
+        try{
+            User::findOrFail($id)->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Remove the specified resource from storage',
+            ]);
+        } catch(Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong!',
+            ]);
+        }
+       
     }
 }
