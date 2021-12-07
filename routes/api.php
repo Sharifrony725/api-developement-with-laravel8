@@ -18,3 +18,5 @@ use App\Models\User;
 //     return $request->user();
 // });
 Route::resource('/users', AuthController::class);
+
+Route::post('/login','App\Http\Controllers\Api\AuthController@login');

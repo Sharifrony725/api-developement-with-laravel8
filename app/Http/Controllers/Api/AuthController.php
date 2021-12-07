@@ -18,7 +18,7 @@ class AuthController extends Controller
         $users = User::all();
         return response()->json([
             'message' => 'Display a listing of the resouce',
-            '$data' => $users 
+            '$data' => $users
         ]);
     }
 
@@ -58,7 +58,7 @@ class AuthController extends Controller
                     'success' => true,
                     'message' => "User Save successfully",
                     'data' => $users
-                   
+
             ],200);
         }
         catch(Exception $e){
@@ -67,8 +67,8 @@ class AuthController extends Controller
                 'message' => 'Something wrong!'
             ], 400);
         }
-        
-        
+
+
     }
 
     /**
@@ -78,7 +78,7 @@ class AuthController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    { 
+    {
         try{
         User::findOrFail($id);
         return response()->json([
@@ -167,6 +167,10 @@ class AuthController extends Controller
                 'message' => 'Something went wrong!',
             ]);
         }
-       
+
     }
+    public  function  login(){
+        return 'ok';
+    }
+
 }
